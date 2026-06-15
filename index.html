@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ROYAL CASINO | Bilingual Betting Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0c16; font-family: 'Inter', sans-serif; color: #F0F3FA; }
+        
+        .lang-corner {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(8, 12, 22, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .lang-corner-btn {
+            background: none;
+            border: none;
+            color: #B9C2D4;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 6px 16px;
+            border-radius: 30px;
+            transition: 0.2s;
+            font-size: 13px;
+        }
+        .lang-corner-btn.active-lang { background: #D4AF37; color: #0a0c16; }
+        
+        .auth-modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .auth-box {
+            background: linear-gradient(145deg, #121728, #0d111f);
+            border-radius: 48px;
+            padding: 40px;
+            width: 420px;
+            max-width: 90%;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+        .auth-logo { text-align: center; font-size: 28px; font-weight: 900; background: linear-gradient(135deg, #FFE9A7, #D4AF37); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 25px; }
+        .auth-tabs { display: flex; gap: 20px; margin-bottom: 25px; border-bottom: 1px solid #2a2f48; }
+        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: 700; color: #9aa4c2; transition: 0.2s; }
+        .auth-tab.active-tab { color: #FFD966; border-bottom: 2px solid #FFD966; }
+        .auth-input { width: 100%; padding: 14px 18px; margin: 10px 0; border-radius: 60px; border: 1px solid rgba(212, 175, 55, 0.4); background: #0a0e1a; color: white; font-size: 15px; outline: none; }
+        .auth-btn { width: 100%; padding: 14px; margin-top: 20px; border-radius: 60px; background: linear-gradient(95deg, #D4AF37, #F5BC2C); border: none; font-weight: 800; font-size: 16px; cursor: pointer; color: #0a0c16; }
+        .auth-error { color: #ff6b6b; font-size: 12px; text-align: center; margin-top: 12px; }
+        
+        .navbar { background: rgba(8, 12, 22, 0.98); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(212, 175, 55, 0.5); padding: 12px 24px; position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1450px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .logo { font-size: 32px; font-weight: 900; background: linear-gradient(135deg, #FFE9A7, #D4AF37, #FFD700); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo-sub { font-size: 10px; color: #D4AF37; display: block; }
+        .user-info-header { display: flex; align-items: center; gap: 15px; }
+        .user-name-header { color: #FFD966; font-weight: 700; }
+        .logout-header-btn { background: #C62828; padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; color: white; }
+        .nav-links { display: flex; gap: 28px; flex-wrap: wrap; }
+        .nav-item { font-weight: 700; cursor: pointer; padding: 8px 0; transition: 0.2s; color: #B9C2D4; font-size: 15px; }
+        .nav-item:hover, .nav-item.active-nav { color: #FFD966; border-bottom: 2px solid #FFD966; }
+        .nav-highlight { background: linear-gradient(95deg, #D4AF37, #F5BC2C); padding: 8px 20px; border-radius: 40px; color: #0a0c16; font-weight: 800; }
+        .main-content { padding: 24px; max-width: 1450px; margin: 0 auto; }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .home-layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+        
+        .game-card { background: rgba(16, 20, 32, 0.8); backdrop-filter: blur(12px); border-radius: 32px; padding: 24px; border: 1px solid rgba(212, 175, 55, 0.45); }
+        .timer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .period-badge { background: #1e243b; padding: 8px 20px; border-radius: 40px; font-family: monospace; font-weight: 800; font-size: 15px; color: #FFD966; }
+        .time-remaining { background: #0b0e18; padding: 6px 24px; border-radius: 60px; font-weight: 800; font-size: 28px; font-family: monospace; color: #F5BC2C; }
+        .timer-selector { display: flex; gap: 12px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
+        .timer-option { background: #121728; padding: 8px 20px; border-radius: 40px; font-weight: 700; cursor: pointer; border: 1px solid #3a4058; }
+        .timer-option.active-timer { background: #FFD966; color: #0a0c16; }
+        .color-bets { display: flex; gap: 18px; justify-content: center; margin: 20px 0; }
+        .color-option { flex: 1; padding: 14px 0; border-radius: 60px; font-weight: 800; font-size: 20px; text-align: center; cursor: pointer; background: #121728; border: 2px solid transparent; }
+        .color-option.green { background: #1B5E20; color: #C8E6C9; }
+        .color-option.violet { background: #6A1B9A; color: #E1BEE7; }
+        .color-option.red { background: #B71C1C; color: #FFCDD2; }
+        .color-option.selected-color { border: 2px solid #FFD966; box-shadow: 0 0 20px #FFB74D; }
+        .multiplier-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0; }
+        .multiplier { background: #10141f; padding: 8px 18px; border-radius: 40px; font-weight: 800; cursor: pointer; border: 1px solid #3a4058; }
+        .multiplier.selected-multi { background: #FFD966; color: #0a0c16; }
+        .bigsmall-row { display: flex; gap: 20px; justify-content: center; margin: 20px 0; }
+        .bigsmall-btn { background: #0f1322; padding: 10px 35px; border-radius: 60px; font-weight: 800; font-size: 18px; cursor: pointer; border: 1px solid #616a8a; }
+        .bigsmall-btn.selected-bs { background: #FFD966; color: #0a0c12; }
+        .bet-control { display: flex; gap: 12px; align-items: center; background: #0c1020; padding: 12px 18px; border-radius: 80px; margin: 15px 0; }
+        .bet-amount-input { background: #02040e; border: 1px solid #FFD966; padding: 10px 15px; border-radius: 40px; color: #FFE7A3; font-weight: 700; width: 140px; outline: none; }
+        .place-bet-btn { background: linear-gradient(95deg, #F5BC2C, #D4AF37); border: none; padding: 10px 28px; border-radius: 60px; font-weight: 800; cursor: pointer; flex: 1; }
+        .result-message { font-size: 14px; margin-top: 12px; text-align: center; background: #00000055; padding: 8px; border-radius: 60px; }
+        
+        .leaderboard-card { background: linear-gradient(145deg, rgba(16, 20, 36, 0.95), rgba(8, 12, 26, 0.98)); border-radius: 36px; padding: 20px; border: 1px solid rgba(212, 175, 55, 0.5); position: relative; overflow: hidden; }
+        .leaderboard-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%); pointer-events: none; animation: rotateGlow 20s linear infinite; }
+        @keyframes rotateGlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .leaderboard-header { font-size: 20px; font-weight: 900; background: linear-gradient(135deg, #FFE9A7, #D4AF37); -webkit-background-clip: text; background-clip: text; color: transparent; text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid rgba(212, 175, 55, 0.5); }
+        .leaderboard-list { max-height: 550px; overflow-y: auto; scrollbar-width: thin; }
+        .leader-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; margin: 3px 0; border-radius: 14px; background: rgba(20, 25, 45, 0.5); border: 1px solid transparent; font-size: 12px; }
+        .leader-rank { font-weight: 800; width: 65px; }
+        .rank-1 { color: #FFD700; text-shadow: 0 0 8px #FFD700; }
+        .rank-2 { color: #C0C0C0; text-shadow: 0 0 6px #C0C0C0; }
+        .rank-3 { color: #CD7F32; text-shadow: 0 0 6px #CD7F32; }
+        .leader-name { flex: 1; color: #E8EEFF; font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .leader-balance { font-weight: 800; color: #FFDF8C; font-size: 12px; }
+        .special-top { background: linear-gradient(90deg, rgba(212,175,55,0.25), rgba(30,36,59,0.8)); border-left: 3px solid #FFD966; }
+        .current-user-item { background: linear-gradient(95deg, #2a3150, #1f253f); border-radius: 16px; margin-top: 10px; padding: 10px 12px; border: 2px solid #FFD966; animation: pulseBorder 2s infinite; }
+        @keyframes pulseBorder { 0% { border-color: #FFD966; } 50% { border-color: #FFE9A7; } 100% { border-color: #FFD966; } }
+        
+        .wallet-mini { background: linear-gradient(145deg, #121728, #080c18); border-radius: 28px; padding: 20px; text-align: center; border: 1px solid rgba(212, 175, 55, 0.4); }
+        .balance-mini { font-size: 32px; font-weight: 800; color: #FFDF8C; }
+        .mini-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 12px; }
+        .mini-btn { background: #1e243b; padding: 8px 20px; border-radius: 40px; font-weight: 700; cursor: pointer; }
+        .mini-btn.deposit { background: #2E7D32; color: white; }
+        .mini-btn.withdraw { background: #C62828; color: white; }
+        
+        .history-section { background: rgba(8, 12, 22, 0.95); border-radius: 28px; padding: 20px; margin-top: 20px; }
+        .history-tabs { display: flex; gap: 24px; margin-bottom: 18px; border-bottom: 1px solid #2a2f48; }
+        .tab-btn { background: none; border: none; color: #9aa4c2; font-weight: 700; padding: 8px 0; cursor: pointer; }
+        .tab-btn.active-tab { color: #FFD966; border-bottom: 2px solid #FFD966; }
+        .history-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+        .history-table th, .history-table td { padding: 6px 3px; text-align: center; border-bottom: 1px solid #22283e; }
+        .color-badge { display: inline-block; width: 18px; height: 18px; border-radius: 50%; }
+        .green-bg { background: #4CAF50; }
+        .violet-bg { background: #AA00FF; }
+        .red-bg { background: #F44336; }
+        
+        .page-card { background: rgba(16, 20, 32, 0.8); border-radius: 32px; padding: 28px; border: 1px solid rgba(212, 175, 55, 0.35); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1500; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #12172a; border-radius: 32px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 24px; border: 1px solid #FFD966; }
+        .amount-preset, .channel-item, .vip-package { background: #1e243b; padding: 14px; text-align: center; border-radius: 60px; cursor: pointer; font-weight: 700; margin: 8px 0; transition: 0.2s; }
+        .amount-preset:hover, .channel-item:hover, .vip-package:hover { background: #FFD966; color: #0a0c16; }
+        .channel-item.selected { border: 2px solid #FFD966; background: #2a3150; }
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+        .pending-badge { background: #FF9800; color: #0a0c16; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 800; }
+        input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 60px; border: 1px solid #FFD966; background: #0a0e1a; color: white; outline: none; }
+        .submit-btn { background: #FFD966; color: #0a0c16; padding: 16px; border: none; border-radius: 60px; font-weight: 800; width: 100%; margin-top: 15px; cursor: pointer; }
+        .warning-box { background: #1a1f32; padding: 12px; border-radius: 20px; margin: 15px 0; font-size: 12px; color: #ffaa66; }
+        .close-modal { text-align: right; cursor: pointer; font-size: 28px; color: #aaa; }
+        .commission-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #2a2f48; }
+        .member-header { background: linear-gradient(145deg, #121728, #0a0e1a); border-radius: 28px; padding: 20px; text-align: center; margin-bottom: 24px; }
+        .vip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+        .vip-card { background: linear-gradient(145deg, #1a1f35, #0f1322); border-radius: 28px; padding: 20px; border: 1px solid rgba(212, 175, 55, 0.4); cursor: pointer; transition: 0.2s; }
+        .vip-card:hover { transform: translateY(-5px); border-color: #D4AF37; }
+        .vip-price { font-size: 28px; font-weight: 900; color: #FFD966; margin: 10px 0; }
+        .vip-feature { font-size: 12px; color: #B9C2D4; margin: 5px 0; }
+        .buy-vip-btn { background: #D4AF37; color: #0a0c16; padding: 10px; border-radius: 40px; margin-top: 15px; text-align: center; font-weight: 800; cursor: pointer; }
+        @media (max-width: 900px) { .home-layout { grid-template-columns: 1fr; } .lang-corner { top: 70px; right: 10px; } }
+    </style>
+</head>
+<body>
+
+<div class="lang-corner">
+    <button class="lang-corner-btn" data-lang="bn">বাংলা</button>
+    <button class="lang-corner-btn" data-lang="en">English</button>
+</div>
+
+<div id="authModal" class="auth-modal">
+    <div class="auth-box">
+        <div class="auth-logo">👑 ROYAL CASINO</div>
+        <div class="auth-tabs"><div class="auth-tab active-tab" data-auth-tab="login">Login</div><div class="auth-tab" data-auth-tab="signup">Sign Up</div></div>
+        <div id="loginForm"><input type="text" id="loginUsername" class="auth-input" placeholder="Username"><input type="password" id="loginPassword" class="auth-input" placeholder="Password"><button class="auth-btn" onclick="handleLogin()">🔐 LOGIN</button></div>
+        <div id="signupForm" style="display:none;"><input type="text" id="signupUsername" class="auth-input" placeholder="Choose Username"><input type="password" id="signupPassword" class="auth-input" placeholder="Password"><button class="auth-btn" onclick="handleSignup()">📝 CREATE ACCOUNT</button></div>
+        <div id="authError" class="auth-error"></div>
+    </div>
+</div>
+
+<div id="mainApp" style="display:none;">
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">👑 ROYAL CASINO<span class="logo-sub">Bilingual Betting</span></div>
+            <div class="user-info-header"><span class="user-name-header" id="currentUsername">User</span><button class="logout-header-btn" onclick="handleLogout()">Logout</button></div>
+            <div class="nav-links"><div class="nav-item active-nav" data-page="home">Home</div><div class="nav-item" data-page="activity">Activity</div><div class="nav-item nav-highlight" data-page="promotion">Get 1000 BDT</div><div class="nav-item" data-page="account">Account</div></div>
+        </div>
+    </div>
+    <div class="main-content">
+        <div id="homePage" class="page active-page">
+            <div class="home-layout">
+                <div><div class="game-card"><div class="timer-header"><div class="period-badge" id="periodDisplay">Period: --</div><div class="time-remaining" id="timerDisplay">00:00</div></div><div class="timer-selector"><div class="timer-option" data-time="5">5s</div><div class="timer-option" data-time="30">30s</div><div class="timer-option active-timer" data-time="60">1m</div><div class="timer-option" data-time="120">2m</div></div><div class="color-bets"><div class="color-option green" data-color="green">GREEN</div><div class="color-option violet" data-color="violet">VIOLET</div><div class="color-option red" data-color="red">RED</div></div><div class="multiplier-row"><span class="multiplier" data-mult="1">X1</span><span class="multiplier" data-mult="5">X5</span><span class="multiplier" data-mult="10">X10</span><span class="multiplier" data-mult="20">X20</span><span class="multiplier" data-mult="50">X50</span><span class="multiplier" data-mult="100">X100</span></div><div class="bigsmall-row"><div class="bigsmall-btn" data-bs="big">BIG</div><div class="bigsmall-btn" data-bs="small">SMALL</div></div><div class="bet-control"><input type="number" id="betAmount" class="bet-amount-input" value="100" step="10" min="10"><button id="placeBetBtn" class="place-bet-btn">PLACE BET (BDT)</button></div><div class="result-message" id="gameResultMsg">Select color/multiplier & place bet</div></div><div class="history-section"><div class="history-tabs"><button class="tab-btn active-tab" data-tab="game">Game History</button><button class="tab-btn" data-tab="my">My History</button><button class="tab-btn" data-tab="requests">Requests</button></div><table class="history-table"><thead><th>Period</th><th>Number</th><th>B/S</th><th>Color</th></thead><tbody id="historyBody"></tbody></table></div></div>
+                <div class="right-sidebar"><div class="leaderboard-card"><div class="leaderboard-header">🏆 TOP 200 LEGENDS 🏆</div><div class="leaderboard-list" id="leaderboardList"></div></div><div class="wallet-mini"><div>MY BALANCE (BDT)</div><div class="balance-mini" id="miniBalance">0.00</div><div class="mini-buttons"><div class="mini-btn deposit" id="miniDepositBtn">DEPOSIT</div><div class="mini-btn withdraw" id="miniWithdrawBtn">WITHDRAW</div></div></div></div>
+            </div>
+        </div>
+        <div id="activityPage" class="page"><div class="page-card"><div class="member-header"><div class="member-name">📊 Activity & Rewards</div></div><div class="commission-row"><span>Today's Bonus</span><span>0.00 BDT</span></div><div class="commission-row"><span>Betting Rebate</span><span>0.00 BDT</span></div><div class="commission-row"><span>Jackpot Chance</span><span>Active</span></div></div></div>
+        <div id="promotionPage" class="page"><div class="page-card"><div class="member-name">🎁 Get 1000 BDT Bonus</div><div class="commission-row"><span>Welcome Package</span><span>Up to 3000 BDT</span></div><div class="commission-row"><span>Super Ace Multiplier</span><span>24.55X</span></div><div class="warning-box" style="text-align:center;">Code: <strong style="color:#FFD966;">ROYAL1000</strong><br>Min Deposit 200 BDT</div></div></div>
+        <div id="accountPage" class="page"><div class="page-card"><div class="member-header"><div class="member-name" id="accMemberName">MEMBER: </div><div class="member-uid" id="accUid">UID: </div></div><div class="total-balance-card" style="background:#0f1322;border-radius:24px;padding:20px;text-align:center;margin-bottom:24px;"><div>Total Balance</div><div class="total-balance-value" id="accBalance" style="font-size:42px;color:#FFDF8C;">0.00</div><div>BDT</div></div><div class="action-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;"><div class="action-grid-btn" id="accWalletBtn" style="background:#121728;padding:14px;border-radius:60px;text-align:center;cursor:pointer;">Wallet</div><div class="action-grid-btn" id="accDepositBtn" style="background:#121728;padding:14px;border-radius:60px;text-align:center;cursor:pointer;">Deposit</div><div class="action-grid-btn" id="accWithdrawBtn" style="background:#121728;padding:14px;border-radius:60px;text-align:center;cursor:pointer;">Withdraw</div><div class="action-grid-btn" id="accVipBtn" style="background:#121728;padding:14px;border-radius:60px;text-align:center;cursor:pointer;">VIP Packages</div></div><div class="history-tabs" style="display:flex;gap:20px;margin-bottom:20px;"><button class="tab-btn2 active-tab2" data-account-tab="deposit">Deposit History</button><button class="tab-btn2" data-account-tab="withdraw">Withdraw History</button></div><div id="depositHistoryList" class="history-list"></div><div id="withdrawHistoryList" class="history-list" style="display:none;"></div></div></div>
+    </div>
+</div>
+
+<div id="vipModal" class="modal"><div class="modal-content"><div class="close-modal" onclick="closeVipModal()">×</div><div class="modal-header" style="font-size:24px;font-weight:800;color:#FFD966;text-align:center;">👑 VIP MEMBERSHIP</div><div class="vip-grid" id="vipPackagesList"></div></div></div>
+<div id="depositModal" class="modal"><div class="modal-content"><div class="close-modal" onclick="closeDepositModal()">×</div><div class="modal-header" style="font-size:24px;font-weight:800;color:#FFD966;">💰 DEPOSIT REQUEST</div><div class="channel-list" id="channelList"></div><div class="amount-grid" id="depositAmountGrid"></div><input type="number" id="customDepositAmount" placeholder="Custom amount (Min 100 BDT)"><div class="warning-box">📲 Send to: <strong>01860909272</strong> (bKash/Nagad/Rocket)</div><input type="text" id="transactionId" placeholder="Transaction ID"><button class="submit-btn" id="confirmDepositBtn">SUBMIT REQUEST</button></div></div>
+<div id="withdrawModal" class="modal"><div class="modal-content"><div class="close-modal" onclick="closeWithdrawModal()">×</div><div class="modal-header" style="font-size:24px;font-weight:800;color:#FFD966;">💸 WITHDRAW REQUEST</div><div id="withdrawWalletOptions"><div class="channel-item" data-wallet="bKash">bKash</div><div class="channel-item" data-wallet="Nagad">Nagad</div><div class="channel-item" data-wallet="Rocket">Rocket</div></div><div id="accountField" style="display:none;"><input type="text" id="accountNumber" placeholder="Account Number"></div><div class="amount-grid" id="withdrawAmountGrid"></div><input type="number" id="customWithdrawAmount" placeholder="Amount (Min 100 BDT)"><button class="submit-btn" id="confirmWithdrawBtn">SUBMIT REQUEST</button></div></div>
+
+<script>
+    // ==================== LANGUAGE SYSTEM - FULLY FIXED ====================
+    let currentLanguage = 'bn';
+    
+    // Complete translation dictionary
+    const translations = {
+        bn: {
+            // Navbar
+            'Home': 'হোম', 'Activity': 'এক্টিভিটি', 'Get 1000 BDT': '১০০০ টাকা বোনাস', 'Account': 'অ্যাকাউন্ট',
+            // Timer
+            'Period: --': 'পিরিয়ড: --', '5s': '৫সে', '30s': '৩০সে', '1m': '১মি', '2m': '২মি',
+            // Colors
+            'GREEN': 'সবুজ', 'VIOLET': 'বেগুনি', 'RED': 'লাল',
+            // Bet
+            'PLACE BET (BDT)': 'বাজি রাখুন (BDT)', 'Select color/multiplier & place bet': 'রঙ/মাল্টিপ্লায়ার সিলেক্ট করুন',
+            'BIG': 'বড়', 'SMALL': 'ছোট',
+            // History
+            'Game History': 'গেম ইতিহাস', 'My History': 'আমার ইতিহাস', 'Requests': 'রিকোয়েস্ট',
+            'Period': 'পিরিয়ড', 'Number': 'নম্বর', 'B/S': 'বড়/ছোট', 'Color': 'রঙ',
+            // Wallet
+            'MY BALANCE (BDT)': 'আমার ব্যালেন্স (BDT)', 'DEPOSIT': 'ডিপোজিট', 'WITHDRAW': 'উইথড্র',
+            // Leaderboard
+            '🏆 TOP 200 LEGENDS 🏆': '🏆 শীর্ষ ২০০ লিজেন্ড 🏆',
+            // Activity
+            '📊 Activity & Rewards': '📊 এক্টিভিটি ও রিওয়ার্ড', 'Today\'s Bonus': 'আজকের বোনাস', 'Betting Rebate': 'বেটিং রিবেট', 'Jackpot Chance': 'জ্যাকপট চান্স', 'Active': 'সক্রিয়',
+            // Promotion
+            '🎁 Get 1000 BDT Bonus': '🎁 ১০০০ টাকা বোনাস পান', 'Welcome Package': 'ওয়েলকাম প্যাকেজ', 'Super Ace Multiplier': 'সুপার এইস মাল্টি', 'Min Deposit 200 BDT': 'ন্যূনতম ডিপোজিট ২০০ BDT',
+            // Account
+            'Total Balance': 'মোট ব্যালেন্স', 'Wallet': 'ওয়ালেট', 'VIP Packages': 'ভিআইপি প্যাকেজ',
+            'Deposit History': 'ডিপোজিট ইতিহাস', 'Withdraw History': 'উইথড্র ইতিহাস',
+            'MEMBER:': 'সদস্য:', 'UID:': 'ইউআইডি:',
+            // Messages
+            'WIN': 'জয়', 'LOSS': 'হার', 'Round': 'রাউন্ড'
+        },
+        en: {
+            'Home': 'Home', 'Activity': 'Activity', 'Get 1000 BDT': 'Get 1000 BDT', 'Account': 'Account',
+            'Period: --': 'Period: --', '5s': '5s', '30s': '30s', '1m': '1m', '2m': '2m',
+            'GREEN': 'GREEN', 'VIOLET': 'VIOLET', 'RED': 'RED',
+            'PLACE BET (BDT)': 'PLACE BET (BDT)', 'Select color/multiplier & place bet': 'Select color/multiplier & place bet',
+            'BIG': 'BIG', 'SMALL': 'SMALL',
+            'Game History': 'Game History', 'My History': 'My History', 'Requests': 'Requests',
+            'Period': 'Period', 'Number': 'Number', 'B/S': 'B/S', 'Color': 'Color',
+            'MY BALANCE (BDT)': 'MY BALANCE (BDT)', 'DEPOSIT': 'DEPOSIT', 'WITHDRAW': 'WITHDRAW',
+            '🏆 TOP 200 LEGENDS 🏆': '🏆 TOP 200 LEGENDS 🏆',
+            '📊 Activity & Rewards': '📊 Activity & Rewards', 'Today\'s Bonus': 'Today\'s Bonus', 'Betting Rebate': 'Betting Rebate', 'Jackpot Chance': 'Jackpot Chance', 'Active': 'Active',
+            '🎁 Get 1000 BDT Bonus': '🎁 Get 1000 BDT Bonus', 'Welcome Package': 'Welcome Package', 'Super Ace Multiplier': 'Super Ace Multiplier', 'Min Deposit 200 BDT': 'Min Deposit 200 BDT',
+            'Total Balance': 'Total Balance', 'Wallet': 'Wallet', 'VIP Packages': 'VIP Packages',
+            'Deposit History': 'Deposit History', 'Withdraw History': 'Withdraw History',
+            'MEMBER:': 'MEMBER:', 'UID:': 'UID:',
+            'WIN': 'WIN', 'LOSS': 'LOSS', 'Round': 'Round'
+        }
+    };
+    
+    function translateText(text) {
+        if (translations[currentLanguage] && translations[currentLanguage][text]) {
+            return translations[currentLanguage][text];
+        }
+        return text;
+    }
+    
+    function updateAllTexts() {
+        // Update all elements with text content
+        document.querySelectorAll('.nav-item, .timer-option, .color-option, .bigsmall-btn, .place-bet-btn, .result-message, .tab-btn, .mini-btn, .leaderboard-header, .member-name, .commission-row span:first-child, .action-grid-btn, .tab-btn2, .total-balance-card div:first-child, .wallet-mini div:first-child, .history-table th').forEach(el => {
+            const originalText = el.getAttribute('data-original') || el.innerText;
+            if (!el.getAttribute('data-original')) el.setAttribute('data-original', originalText);
+            el.innerText = translateText(originalText);
+        });
+        
+        // Update period display
+        const periodEl = document.getElementById('periodDisplay');
+        if (periodEl) periodEl.innerText = translateText('Period: --') + periodCounter.toString().slice(-4);
+        
+        // Update member info
+        if (currentUser) {
+            document.getElementById('accMemberName').innerHTML = `${translateText('MEMBER:')} ${currentUser.username}`;
+            document.getElementById('accUid').innerHTML = `${translateText('UID:')} ${currentUser.uid}`;
+        }
+        
+        // Update game result message if static
+        const resultEl = document.getElementById('gameResultMsg');
+        if (resultEl && !resultEl.innerText.includes('WIN') && !resultEl.innerText.includes('LOSS') && !resultEl.innerText.includes('Bet') && !resultEl.innerText.includes('বাজি')) {
+            resultEl.innerText = translateText('Select color/multiplier & place bet');
+        }
+    }
+    
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        document.querySelectorAll('.lang-corner-btn').forEach(btn => {
+            btn.classList.remove('active-lang');
+            if (btn.dataset.lang === lang) btn.classList.add('active-lang');
+        });
+        updateAllTexts();
+        updateTimerDisplay();
+        renderHistory();
+    }
+    
+    document.querySelectorAll('.lang-corner-btn').forEach(btn => {
+        btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+    });
+    
+    // ==================== AUTH SYSTEM ====================
+    let currentUser = null;
+    let users = JSON.parse(localStorage.getItem('royal_casino_users_auth')) || [];
+    function saveUsersAuth() { localStorage.setItem('royal_casino_users_auth', JSON.stringify(users)); }
+    
+    function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const user = users.find(u => u.username === username && u.password === password);
+        if (user) {
+            if (user.status === 'banned') { document.getElementById('authError').innerText = currentLanguage === 'bn' ? 'অ্যাকাউন্ট ব্যান করা হয়েছে!' : 'Account banned!'; return; }
+            currentUser = user;
+            localStorage.setItem('royal_current_user', JSON.stringify(currentUser));
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('currentUsername').innerText = currentUser.username;
+            updateAllTexts();
+            loadUserData();
+            initGame();
+        } else { document.getElementById('authError').innerText = currentLanguage === 'bn' ? 'ভুল তথ্য!' : 'Invalid credentials!'; }
+    }
+    
+    function handleSignup() {
+        const username = document.getElementById('signupUsername').value.trim();
+        const password = document.getElementById('signupPassword').value.trim();
+        if (!username || !password) { document.getElementById('authError').innerText = currentLanguage === 'bn' ? 'ইউজারনেম ও পাসওয়ার্ড দিন!' : 'Username and password required!'; return; }
+        if (users.find(u => u.username === username)) { document.getElementById('authError').innerText = currentLanguage === 'bn' ? 'ইউজারনেম আছে!' : 'Username exists!'; return; }
+        const newUser = { id: users.length + 1, username, password, balance: 500, status: 'active', uid: 'UID' + Math.floor(Math.random() * 900000 + 100000), vip: null, vipExpiry: null };
+        users.push(newUser);
+        saveUsersAuth();
+        document.getElementById('authError').innerText = currentLanguage === 'bn' ? 'অ্যাকাউন্ট তৈরি! লগইন করুন' : 'Account created! Please login.';
+        document.querySelector('.auth-tab[data-auth-tab="login"]').click();
+    }
+    
+    function handleLogout() { currentUser = null; localStorage.removeItem('royal_current_user'); document.getElementById('mainApp').style.display = 'none'; document.getElementById('authModal').style.display = 'flex'; }
+    function loadUserData() { document.getElementById('miniBalance').innerHTML = currentUser.balance.toFixed(2); document.getElementById('accBalance').innerHTML = currentUser.balance.toFixed(2); updateLeaderboard(); }
+    
+    // VIP Packages
+    const vipPackages = [
+        { id: 1, nameBn: "সিলভার ভিআইপি", nameEn: "SILVER VIP", price: 2000, bonus: 200, benefitsBn: "সাপ্তাহিক ২০০ টাকা বোনাস + ৫% ক্যাশব্যাক", benefitsEn: "200 BDT Weekly Bonus + 5% Cashback" },
+        { id: 2, nameBn: "গোল্ড ভিআইপি", nameEn: "GOLD VIP", price: 5000, bonus: 500, benefitsBn: "সাপ্তাহিক ৫০০ টাকা বোনাস + ১০% ক্যাশব্যাক", benefitsEn: "500 BDT Weekly Bonus + 10% Cashback" },
+        { id: 3, nameBn: "প্লাটিনাম ভিআইপি", nameEn: "PLATINUM VIP", price: 10000, bonus: 1000, benefitsBn: "সাপ্তাহিক ১০০০ টাকা বোনাস + ১৫% ক্যাশব্যাক", benefitsEn: "1000 BDT Weekly Bonus + 15% Cashback" },
+        { id: 4, nameBn: "ডায়মন্ড ভিআইপি", nameEn: "DIAMOND VIP", price: 25000, bonus: 2500, benefitsBn: "সাপ্তাহিক ২৫০০ টাকা বোনাস + ২০% ক্যাশব্যাক", benefitsEn: "2500 BDT Weekly Bonus + 20% Cashback" },
+        { id: 5, nameBn: "রাজকীয় সম্রাট", nameEn: "ROYAL EMPEROR", price: 50000, bonus: 6000, benefitsBn: "সাপ্তাহিক ৬০০০ টাকা বোনাস + ৩০% ক্যাশব্যাক", benefitsEn: "6000 BDT Weekly Bonus + 30% Cashback" }
+    ];
+    
+    function openVipModal() {
+        const container = document.getElementById('vipPackagesList');
+        container.innerHTML = vipPackages.map(pkg => `
+            <div class="vip-card" onclick="buyVipPackage(${pkg.id})">
+                <div style="font-size:20px;font-weight:800;color:#FFD966;">👑 ${currentLanguage === 'bn' ? pkg.nameBn : pkg.nameEn}</div>
+                <div class="vip-price">${pkg.price.toLocaleString()} BDT</div>
+                <div class="vip-feature">✨ ${currentLanguage === 'bn' ? pkg.benefitsBn : pkg.benefitsEn}</div>
+                <div class="buy-vip-btn">${currentLanguage === 'bn' ? 'কিনুন →' : 'BUY →'}</div>
+            </div>
+        `).join('');
+        document.getElementById('vipModal').classList.add('active');
+    }
+    
+    function buyVipPackage(packageId) {
+        const pkg = vipPackages.find(p => p.id === packageId);
+        if (currentUser.balance < pkg.price) { alert(currentLanguage === 'bn' ? `ব্যালেন্স কম! প্রয়োজন: ${pkg.price} BDT` : `Insufficient! Need: ${pkg.price} BDT`); return; }
+        if (confirm(currentLanguage === 'bn' ? `${currentLanguage === 'bn' ? pkg.nameBn : pkg.nameEn} কিনতে ${pkg.price} BDT কাটা হবে?` : `Buy ${currentLanguage === 'bn' ? pkg.nameBn : pkg.nameEn} for ${pkg.price} BDT?`)) {
+            currentUser.balance -= pkg.price;
+            currentUser.vip = currentLanguage === 'bn' ? pkg.nameBn : pkg.nameEn;
+            updateUserBalance();
+            alert(currentLanguage === 'bn' ? `🎉 ভিআইপি সক্রিয়! সাপ্তাহিক বোনাস ${pkg.bonus} BDT` : `🎉 VIP Activated! Weekly bonus ${pkg.bonus} BDT`);
+            closeVipModal();
+        }
+    }
+    function closeVipModal() { document.getElementById('vipModal').classList.remove('active'); }
+    
+    // Game Logic
+    let periodCounter = 2406161001;
+    let timerSeconds = 60;
+    let activeTimer = null, roundActive = true, currentTimerValue = 60;
+    let selectedColor = null, selectedMultiplier = 1, selectedBigSmall = null, currentBetAmount = 0, hasPlacedBet = false;
+    let gameHistory = [], myHistory = [];
+    
+    function initGame() { startTimer(); renderHistory(); updateLeaderboard(); }
+    function generateResult() { let n = Math.floor(Math.random() * 10); let c = n === 0 || n === 5 ? 'violet' : ([1,3,7,9].includes(n) ? 'green' : 'red'); return { number: n, color: c, bigSmall: n >= 5 ? 'Big' : 'Small' }; }
+    function calculatePayout(bet, color, mult, bs, resC, resBS) { let cm = 0; if (color && color === resC) cm = resC === 'green' ? 2 : (resC === 'violet' ? 4.5 : 2); let bsm = (bs && bs === resBS) ? 2 : 0; let total = 1; if (cm > 0) total *= cm; if (bsm > 0) total *= bsm; total *= mult; return (cm > 0 || bsm > 0) ? total * bet : 0; }
+    function resolveRound() {
+        if (!roundActive) return;
+        roundActive = false;
+        if (activeTimer) clearInterval(activeTimer);
+        let res = generateResult(), win = 0, cp = periodCounter;
+        if (hasPlacedBet && currentBetAmount > 0) {
+            win = calculatePayout(currentBetAmount, selectedColor, selectedMultiplier, selectedBigSmall, res.color, res.bigSmall);
+            if (win > 0) { currentUser.balance += win; document.getElementById('gameResultMsg').innerHTML = `🎉 ${translateText('WIN')}! +${win.toFixed(2)} BDT`; myHistory.unshift({ period: cp, type: "WIN", amount: win, bet: currentBetAmount, number: res.number }); }
+            else { document.getElementById('gameResultMsg').innerHTML = `💔 ${translateText('LOSS')}! ${currentBetAmount.toFixed(2)} BDT`; myHistory.unshift({ period: cp, type: "LOSS", amount: currentBetAmount, bet: currentBetAmount, number: res.number }); }
+            updateUserBalance();
+        } else document.getElementById('gameResultMsg').innerHTML = `⚡ ${translateText('Round')} ${cp} | #${res.number}`;
+        gameHistory.unshift({ period: cp, number: res.number, bigSmall: res.bigSmall, color: res.color });
+        periodCounter++; hasPlacedBet = false; currentBetAmount = 0; roundActive = true;
+        renderHistory(); startTimer();
+        document.getElementById('periodDisplay').innerText = `${translateText('Period: --')}${periodCounter.toString().slice(-4)}`;
+    }
+    function updateUserBalance() { const idx = users.findIndex(u => u.username === currentUser.username); if (idx !== -1) users[idx].balance = currentUser.balance; saveUsersAuth(); loadUserData(); updateLeaderboard(); }
+    function startTimer() { if (activeTimer) clearInterval(activeTimer); currentTimerValue = timerSeconds; updateTimerDisplay(); activeTimer = setInterval(() => { if (!roundActive) return; if (currentTimerValue <= 1) { clearInterval(activeTimer); resolveRound(); } else { currentTimerValue--; updateTimerDisplay(); } }, 1000); }
+    function updateTimerDisplay() { document.getElementById('timerDisplay').innerHTML = `${currentTimerValue}s`; }
+    function changeTimer(sec) { timerSeconds = sec; if (activeTimer) clearInterval(activeTimer); roundActive = true; hasPlacedBet = false; startTimer(); document.querySelectorAll('.timer-option').forEach(opt => { opt.classList.remove('active-timer'); if (parseInt(opt.dataset.time) === sec) opt.classList.add('active-timer'); }); }
+    function placeBet() { if (!roundActive) { alert("Wait for next round!"); return; } if (!selectedColor && !selectedBigSmall) { alert("Select COLOR or BIG/SMALL!"); return; } let bet = parseFloat(document.getElementById('betAmount').value); if (isNaN(bet) || bet < 10) { alert("Minimum bet: 10 BDT"); return; } if (bet > currentUser.balance) { alert("Insufficient balance!"); return; } if (hasPlacedBet) { alert("Bet already placed!"); return; } currentUser.balance -= bet; updateUserBalance(); currentBetAmount = bet; hasPlacedBet = true; document.getElementById('gameResultMsg').innerHTML = `✅ ${bet.toFixed(2)} BDT bet placed!`; }
+    function renderHistory() { let tbody = document.getElementById('historyBody'), activeTab = document.querySelector('.tab-btn.active-tab')?.dataset.tab || 'game'; if (activeTab === 'game') { let html = ''; gameHistory.slice(0, 15).forEach(h => { let cls = h.color === 'green' ? 'green-bg' : (h.color === 'violet' ? 'violet-bg' : 'red-bg'); html += `<tr><td>${h.period}</td><td>${h.number}<div class="color-badge ${cls}" style="margin:4px auto;"></div></td><td>${h.bigSmall}</td><td>${h.color}</td></tr>`; }); tbody.innerHTML = html || '<tr><td colspan="4">No history</td></tr>'; } else if (activeTab === 'my') { let html = ''; myHistory.slice(0, 15).forEach(m => { html += `<tr><td>${m.period}</td><td>#${m.number}</td><td style="color:${m.type === 'WIN' ? '#4CAF50' : '#F44336'}">${m.type === 'WIN' ? `+${m.amount.toFixed(2)}` : `-${m.bet.toFixed(2)}`} BDT</td><td>${m.type}</td></tr>`; }); tbody.innerHTML = html || '<tr><td colspan="4">No history</td></tr>'; } else if (activeTab === 'requests') { let deposits = JSON.parse(localStorage.getItem('royal_casino_deposits') || '[]').filter(d => d.username === currentUser?.username); let withdraws = JSON.parse(localStorage.getItem('royal_casino_withdraws') || '[]').filter(w => w.username === currentUser?.username); let all = [...deposits.map(d => ({ ...d, type: 'DEPOSIT' })), ...withdraws.map(w => ({ ...w, type: 'WITHDRAW' }))]; if (all.length === 0) { tbody.innerHTML = '<tr><td colspan="4">No requests</td></tr>'; return; } let html = ''; all.forEach(r => { html += `<tr><td>${r.type}</td><td>${r.amount} BDT</td><td>${r.method || r.wallet || ''}</td><td><span class="pending-badge">PENDING</span></td></tr>`; }); tbody.innerHTML = html; } }
+    
+    // Leaderboard
+    let leaderboardNames = ["RoyalKing", "QueenLegend", "DragonSlayer", "GoldenTiger", "SilverWolf", "CrimsonLord", "EmeraldKnight", "SapphireQueen"];
+    let leaderboard = [];
+    for (let i = 1; i <= 200; i++) { leaderboard.push({ name: leaderboardNames[i % leaderboardNames.length] + i, balance: 100000 - i * 150 + Math.random() * 500 }); }
+    leaderboard.sort((a, b) => b.balance - a.balance);
+    function updateLeaderboard() { let container = document.getElementById('leaderboardList'); if (!container) return; let html = ''; for (let i = 0; i < 200; i++) { let u = leaderboard[i], rank = i + 1; let rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : '')); let specialClass = rank <= 5 ? 'special-top' : ''; html += `<div class="leader-item ${specialClass}"><span class="leader-rank ${rankClass}">#${rank}</span><span class="leader-name">${u.name}</span><span class="leader-balance">${u.balance.toFixed(0)} BDT</span></div>`; } if (currentUser) html += `<div class="leader-item current-user-item"><span class="leader-rank">👑 YOU</span><span class="leader-name">${currentUser.username}</span><span class="leader-balance">${currentUser.balance.toFixed(2)} BDT</span></div>`; container.innerHTML = html; }
+    
+    // Deposit/Withdraw
+    let selectedDepositChannel = null, selectedWithdrawWallet = null;
+    function openDepositModal() { document.getElementById('depositModal').classList.add('active'); renderDepositChannels(); renderDepositAmounts(); }
+    function renderDepositChannels() { let c = document.getElementById('channelList'); c.innerHTML = ''; ['bKash', 'Nagad', 'Rocket'].forEach(ch => { let d = document.createElement('div'); d.className = 'channel-item'; d.innerHTML = `<span>${ch}</span><span>Min 100</span>`; d.onclick = () => { document.querySelectorAll('#channelList .channel-item').forEach(x => x.classList.remove('selected')); d.classList.add('selected'); selectedDepositChannel = ch; }; c.appendChild(d); }); }
+    function renderDepositAmounts() { let cont = document.getElementById('depositAmountGrid'); cont.innerHTML = ''; [100, 200, 500, 1000, 2000, 5000].forEach(amt => { let d = document.createElement('div'); d.className = 'amount-preset'; d.innerText = `${amt} BDT`; d.onclick = () => { document.getElementById('customDepositAmount').value = amt; }; cont.appendChild(d); }); }
+    function confirmDeposit() { if (!selectedDepositChannel) { alert("Select method"); return; } let amt = parseFloat(document.getElementById('customDepositAmount').value); if (isNaN(amt) || amt < 100) { alert("Min 100 BDT"); return; } let trx = document.getElementById('transactionId').value.trim(); if (!trx) { alert("Transaction ID required"); return; } let deposits = JSON.parse(localStorage.getItem('royal_casino_deposits') || '[]'); deposits.push({ username: currentUser.username, amount: amt, method: selectedDepositChannel, trxId: trx, time: new Date().toLocaleString(), uid: currentUser.uid }); localStorage.setItem('royal_casino_deposits', JSON.stringify(deposits)); alert(`✅ Deposit request of ${amt} BDT submitted!`); closeDepositModal(); renderHistory(); }
+    function closeDepositModal() { document.getElementById('depositModal').classList.remove('active'); document.getElementById('customDepositAmount').value = ''; document.getElementById('transactionId').value = ''; }
+    function openWithdrawModal() { if (currentUser.balance < 100) { alert("Min 100 BDT"); return; } document.getElementById('withdrawModal').classList.add('active'); selectedWithdrawWallet = null; renderWithdrawAmounts(); document.getElementById('accountField').style.display = 'none'; }
+    function renderWithdrawAmounts() { let cont = document.getElementById('withdrawAmountGrid'); cont.innerHTML = ''; [100, 200, 500, 1000, 2000, 5000].forEach(amt => { if (amt <= currentUser.balance) { let d = document.createElement('div'); d.className = 'amount-preset'; d.innerText = `${amt} BDT`; d.onclick = () => { document.getElementById('customWithdrawAmount').value = amt; }; cont.appendChild(d); } }); }
+    function confirmWithdrawal() { if (!selectedWithdrawWallet) { alert("Select method"); return; } let amt = parseFloat(document.getElementById('customWithdrawAmount').value); if (isNaN(amt) || amt < 100) { alert("Min 100 BDT"); return; } if (amt > currentUser.balance) { alert("Insufficient balance"); return; } let acc = document.getElementById('accountNumber').value.trim(); if (!acc) { alert("Enter account number"); return; } let withdraws = JSON.parse(localStorage.getItem('royal_casino_withdraws') || '[]'); withdraws.push({ username: currentUser.username, amount: amt, wallet: selectedWithdrawWallet, account: acc, time: new Date().toLocaleString(), uid: currentUser.uid }); localStorage.setItem('royal_casino_withdraws', JSON.stringify(withdraws)); alert(`✅ Withdrawal request of ${amt} BDT submitted!`); closeWithdrawModal(); renderHistory(); }
+    function closeWithdrawModal() { document.getElementById('withdrawModal').classList.remove('active'); document.getElementById('customWithdrawAmount').value = ''; document.getElementById('accountNumber').value = ''; }
+    function renderAccountHistory() { let deposits = JSON.parse(localStorage.getItem('royal_casino_deposits') || '[]').filter(d => d.username === currentUser?.username); let withdraws = JSON.parse(localStorage.getItem('royal_casino_withdraws') || '[]').filter(w => w.username === currentUser?.username); document.getElementById('depositHistoryList').innerHTML = deposits.length === 0 ? '<div class="history-item">No deposits</div>' : deposits.map(r => `<div class="history-item"><span>${r.amount} BDT (${r.method})</span><span class="pending-badge">PENDING</span><span>${r.time}</span></div>`).join(''); document.getElementById('withdrawHistoryList').innerHTML = withdraws.length === 0 ? '<div class="history-item">No withdrawals</div>' : withdraws.map(r => `<div class="history-item"><span>${r.amount} BDT (${r.wallet})</span><span class="pending-badge">PENDING</span><span>${r.time}</span></div>`).join(''); }
+    
+    // Event Listeners
+    document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); document.getElementById(n.dataset.page + 'Page').classList.add('active-page'); document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active-nav')); n.classList.add('active-nav'); }));
+    document.querySelectorAll('.color-option').forEach(el => el.addEventListener('click', () => { selectedColor = el.dataset.color; document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected-color')); el.classList.add('selected-color'); }));
+    document.querySelectorAll('.multiplier').forEach(el => el.addEventListener('click', () => { selectedMultiplier = parseInt(el.dataset.mult); document.querySelectorAll('.multiplier').forEach(m => m.classList.remove('selected-multi')); el.classList.add('selected-multi'); }));
+    document.querySelectorAll('.bigsmall-btn').forEach(el => el.addEventListener('click', () => { selectedBigSmall = el.dataset.bs; document.querySelectorAll('.bigsmall-btn').forEach(b => b.classList.remove('selected-bs')); el.classList.add('selected-bs'); }));
+    document.querySelectorAll('.timer-option').forEach(el => el.addEventListener('click', () => changeTimer(parseInt(el.dataset.time))));
+    document.getElementById('placeBetBtn')?.addEventListener('click', placeBet);
+    document.getElementById('miniDepositBtn')?.addEventListener('click', openDepositModal);
+    document.getElementById('miniWithdrawBtn')?.addEventListener('click', openWithdrawModal);
+    document.getElementById('accDepositBtn')?.addEventListener('click', openDepositModal);
+    document.getElementById('accWithdrawBtn')?.addEventListener('click', openWithdrawModal);
+    document.getElementById('accWalletBtn')?.addEventListener('click', () => alert(`Balance: ${currentUser?.balance.toFixed(2)} BDT`));
+    document.getElementById('accVipBtn')?.addEventListener('click', openVipModal);
+    document.getElementById('confirmDepositBtn')?.addEventListener('click', confirmDeposit);
+    document.getElementById('confirmWithdrawBtn')?.addEventListener('click', confirmWithdrawal);
+    document.querySelectorAll('#withdrawWalletOptions .channel-item').forEach(opt => opt.addEventListener('click', () => { document.querySelectorAll('#withdrawWalletOptions .channel-item').forEach(o => o.classList.remove('selected')); opt.classList.add('selected'); selectedWithdrawWallet = opt.innerText.trim(); document.getElementById('accountField').style.display = 'block'; document.getElementById('accountNumber').placeholder = `${selectedWithdrawWallet} Account Number`; }));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab')); btn.classList.add('active-tab'); renderHistory(); }));
+    document.querySelectorAll('.auth-tab').forEach(tab => tab.addEventListener('click', () => { document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active-tab')); tab.classList.add('active-tab'); let type = tab.dataset.authTab; document.getElementById('loginForm').style.display = type === 'login' ? 'block' : 'none'; document.getElementById('signupForm').style.display = type === 'signup' ? 'block' : 'none'; }));
+    document.querySelectorAll('.tab-btn2').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.tab-btn2').forEach(b => b.classList.remove('active-tab2')); btn.classList.add('active-tab2'); let tab = btn.dataset.accountTab; document.getElementById('depositHistoryList').style.display = tab === 'deposit' ? 'block' : 'none'; document.getElementById('withdrawHistoryList').style.display = tab === 'withdraw' ? 'block' : 'none'; renderAccountHistory(); }));
+    
+    const savedUser = localStorage.getItem('royal_current_user');
+    if (savedUser) { currentUser = JSON.parse(savedUser); if (currentUser && users.find(u => u.username === currentUser.username)) { document.getElementById('authModal').style.display = 'none'; document.getElementById('mainApp').style.display = 'block'; document.getElementById('currentUsername').innerText = currentUser.username; loadUserData(); initGame(); updateAllTexts(); } else { localStorage.removeItem('royal_current_user'); } }
+    
+    setLanguage('bn');
+</script>
+</body>
+</html>
