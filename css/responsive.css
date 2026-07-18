@@ -1,0 +1,83 @@
+@media (max-width: 991px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: 70px 1fr;
+        grid-template-areas: 
+            "header"
+            "main";
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .top-header {
+        padding: 0 20px;
+    }
+
+    .dashboard-rows {
+        grid-template-columns: 1fr;
+    }
+
+    .flight-game-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wallet-transactions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+        height: calc(100vh - 140px); /* accounting for mobile navigation */
+    }
+
+    .hero-section {
+        padding: 20px;
+    }
+
+    .quick-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Mobile bottom navigation */
+    .mobile-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-cyber);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 999;
+    }
+
+    .mob-item {
+        color: var(--text-secondary);
+        font-size: 1.4rem;
+        padding: 10px;
+        transition: var(--transition-fast);
+    }
+
+    .mob-item.active {
+        color: var(--neon-green);
+        text-shadow: 0 0 8px var(--neon-green-glow);
+    }
+
+    .numbers-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* Hide mobile nav on desktop */
+@media (min-width: 992px) {
+    .mobile-nav {
+        display: none !important;
+    }
+}
